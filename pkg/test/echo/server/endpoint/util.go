@@ -16,12 +16,29 @@ package endpoint
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"net"
 	"os"
 
 	"istio.io/istio/pkg/test/echo/common/response"
 )
+
+func tlsListenOnPort(port int, cer string, key string) (net.Listener, int, error) {
+	cert, err := tls.LoadX509KeyPair(cer, key)
+	if err != nil {
+		return nil, 0, err
+	}
+	tlsCfg := &tls.Config{Certificates: []tls.Certificate{cert}}
+
+	listener, err := tls.Listen("tcp", fmt.Sprintf(":%d", port), tlsCfg)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	port = listener.Addr().(*net.TCPAddr).Port
+	return listener, port, nil
+}
 
 func listenOnPort(port int) (net.Listener, int, error) {
 	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
