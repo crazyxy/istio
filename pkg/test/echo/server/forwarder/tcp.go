@@ -26,7 +26,7 @@ import (
 var _ protocol = &tcpProtocol{}
 
 type tcpProtocol struct {
-	dialer *net.Dialer
+	conn net.Conn
 }
 
 func (c *tcpProtocol) makeRequest(ctx context.Context, req *request) (string, error) {
@@ -37,34 +37,25 @@ func (c *tcpProtocol) makeRequest(ctx context.Context, req *request) (string, er
 		outBuffer.WriteString(fmt.Sprintf("[%d] Echo=%s\n", req.RequestID, req.Message))
 	}
 
-	conn, err := c.dialer.DialContext(ctx, "tcp", req.URL)
-	if err != nil {
-		// timeout or bad handshake
-		return outBuffer.String(), err
-	}
-	defer func() {
-		_ = conn.Close()
-	}()
-
 	// Apply per-request timeout to calculate deadline for reads/writes.
 	ctx, cancel := context.WithTimeout(ctx, req.Timeout)
 	defer cancel()
 
 	// Apply the deadline to the connection.
 	deadline, _ := ctx.Deadline()
-	if err := conn.SetWriteDeadline(deadline); err != nil {
+	if err := c.conn.SetWriteDeadline(deadline); err != nil {
 		return outBuffer.String(), err
 	}
-	if err := conn.SetReadDeadline(deadline); err != nil {
+	if err := c.conn.SetReadDeadline(deadline); err != nil {
 		return outBuffer.String(), err
 	}
 
-	_, err = conn.Write([]byte(req.Message))
+	_, err := c.conn.Write([]byte(req.Message))
 	if err != nil {
 		return outBuffer.String(), err
 	}
 
-	resp, err := bufio.NewReader(conn).ReadByte()
+	resp, err := bufio.NewReader(c.conn).ReadByte()
 	if err != nil {
 		return outBuffer.String(), err
 	}
@@ -79,5 +70,6 @@ func (c *tcpProtocol) makeRequest(ctx context.Context, req *request) (string, er
 }
 
 func (c *tcpProtocol) Close() error {
+	c.conn.Close()
 	return nil
 }

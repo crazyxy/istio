@@ -36,8 +36,8 @@ var (
 		return client.Do(req)
 	}
 	// DefaultTCPDialFunc just calls dialer.Dial, with no alterations to the arguments.
-	DefaultTCPDialFunc = func(dialer *net.Dialer, address string) (net.Conn, error) {
-		return dialer.Dial("tcp", address)
+	DefaultTCPDialFunc = func(dialer *net.Dialer, ctx context.Context, address string) (net.Conn, error) {
+		return dialer.DialContext(ctx, "tcp", address)
 	}
 	// DefaultDialer is provides defaults for all dial functions.
 	DefaultDialer = Dialer{
@@ -58,7 +58,7 @@ type WebsocketDialFunc func(dialer *websocket.Dialer, urlStr string, requestHead
 type HTTPDoFunc func(client *http.Client, req *http.Request) (*http.Response, error)
 
 // TCPDialFunc a function for establishing a TCP connection.
-type TCPDialFunc func(dialer *net.Dialer, address string) (net.Conn, error)
+type TCPDialFunc func(dialer *net.Dialer, ctx context.Context, address string) (net.Conn, error)
 
 // Dialer is a replaceable set of functions for creating client-side connections for various protocols, allowing a test
 // application to intercept the connection creation.

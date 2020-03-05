@@ -132,8 +132,16 @@ func newProtocol(cfg Config) (protocol, error) {
 		dialer := &net.Dialer{
 			Timeout: timeout,
 		}
+		ctx, cancel := context.WithTimeout(context.Background(), common.ConnectionTimeout)
+		defer cancel()
+		address := rawURL[len(u.Scheme+"://"):]
+
+		tcpConn, err := cfg.Dialer.TCP(dialer, ctx, address)
+		if err != nil {
+			return nil, err
+		}
 		return &tcpProtocol{
-			dialer: dialer,
+			conn: tcpConn,
 		}, nil
 	}
 
