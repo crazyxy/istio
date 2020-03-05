@@ -15,7 +15,6 @@
 package forwarder
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"fmt"
@@ -50,15 +49,24 @@ func (c *tcpProtocol) makeRequest(ctx context.Context, req *request) (string, er
 		return outBuffer.String(), err
 	}
 
-	_, err := c.conn.Write([]byte(req.Message))
+	// Make sure the client write something to the buffer
+	message := "HelloWorld"
+	if req.Message != "" {
+		message = req.Message
+	}
+
+	_, err := c.conn.Write([]byte(message))
 	if err != nil {
 		return outBuffer.String(), err
 	}
 
-	resp, err := bufio.NewReader(c.conn).ReadByte()
+	var resp []byte
+	n, err := c.conn.Read(resp)
 	if err != nil {
 		return outBuffer.String(), err
 	}
+
+	outBuffer.WriteString(fmt.Sprintf("[%d] Read %d bytes\n", req.RequestID, n))
 
 	for _, line := range strings.Split(string(resp), "\n") {
 		if line != "" {
