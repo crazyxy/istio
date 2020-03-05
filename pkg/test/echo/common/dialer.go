@@ -58,7 +58,7 @@ type WebsocketDialFunc func(dialer *websocket.Dialer, urlStr string, requestHead
 type HTTPDoFunc func(client *http.Client, req *http.Request) (*http.Response, error)
 
 // TCPDialFunc a function for establishing a TCP connection.
-type TCPDialFunc func(dialer *net.Dialer, ctx context.Context, address string) (net.Conn, error)
+type TCPDialFunc func(dialer net.Dialer, ctx context.Context, address string) (net.Conn, error)
 
 // Dialer is a replaceable set of functions for creating client-side connections for various protocols, allowing a test
 // application to intercept the connection creation.
