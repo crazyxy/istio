@@ -36,7 +36,7 @@ var (
 		return client.Do(req)
 	}
 	// DefaultTCPDialFunc just calls dialer.Dial, with no alterations to the arguments.
-	DefaultTCPDialFunc = func(dialer *net.Dialer, ctx context.Context, address string) (net.Conn, error) {
+	DefaultTCPDialFunc = func(dialer net.Dialer, ctx context.Context, address string) (net.Conn, error) {
 		return dialer.DialContext(ctx, "tcp", address)
 	}
 	// DefaultDialer is provides defaults for all dial functions.
