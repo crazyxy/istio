@@ -56,6 +56,7 @@ func (s *tcpInstance) Start(onReady OnReadyFunc) error {
 				return
 			}
 
+			log.Info("xydebug !!!")
 			go s.echo(conn)
 		}
 	}()
@@ -74,6 +75,7 @@ func (s *tcpInstance) echo(conn net.Conn) {
 		log.Warn("tcp read failed: " + err.Error())
 	}
 
+	log.Infof("xydebug: receive %s", string(buf))
 	// echo the message in the buffer
 	conn.Write(buf)
 	conn.Close()

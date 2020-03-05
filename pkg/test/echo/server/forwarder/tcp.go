@@ -60,7 +60,7 @@ func (c *tcpProtocol) makeRequest(ctx context.Context, req *request) (string, er
 		return outBuffer.String(), err
 	}
 
-	var resp []byte
+	resp := make([]byte, 1024)
 	n, err := c.conn.Read(resp)
 	if err != nil {
 		return outBuffer.String(), err
