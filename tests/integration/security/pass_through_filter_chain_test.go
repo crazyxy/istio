@@ -65,9 +65,23 @@ func TestPassThroughFilterChain(t *testing.T) {
 						},
 					},
 					// The port 8085/8086 will be defined only in the workload and not in the k8s service.
-					WorkloadOnlyPorts: []int{
-						8085,
-						8086,
+					WorkloadOnlyPorts: []echo.WorkloadPort{
+						{
+							Port:     8085,
+							Protocol: protocol.HTTP,
+						},
+						{
+							Port:     8086,
+							Protocol: protocol.HTTP,
+						},
+						{
+							Port:     8087,
+							Protocol: protocol.TCP,
+						},
+						{
+							Port:     8088,
+							Protocol: protocol.TCP,
+						},
 					},
 				}
 			}

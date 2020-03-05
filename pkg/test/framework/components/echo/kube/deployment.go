@@ -109,7 +109,11 @@ spec:
           - "{{ $p.Port }}"
 {{- end }}
 {{- range $i, $p := .WorkloadOnlyPorts }}
+{{- if eq .Protocol "TCP" }}
+          - --tcp
+{{- else }}
           - --port
+{{- end }}
           - "{{ $p }}"
 {{- end }}
           - --version
