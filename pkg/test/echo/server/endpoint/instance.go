@@ -18,8 +18,6 @@ import (
 	"fmt"
 	"io"
 
-	"istio.io/pkg/log"
-
 	"istio.io/istio/pilot/pkg/model"
 	"istio.io/istio/pkg/config/protocol"
 	"istio.io/istio/pkg/test/echo/common"
@@ -50,7 +48,6 @@ type Instance interface {
 
 // New creates a new endpoint Instance.
 func New(cfg Config) (Instance, error) {
-	log.Infof("xydebug: %v", cfg.Port)
 	if cfg.Port != nil {
 		switch cfg.Port.Protocol {
 		case protocol.HTTP, protocol.HTTPS:

@@ -108,7 +108,7 @@ func configureLogging(_ *cobra.Command, _ []string) error {
 func init() {
 	rootCmd.PersistentFlags().IntSliceVar(&httpPorts, "port", []int{8080}, "HTTP/1.1 ports")
 	rootCmd.PersistentFlags().IntSliceVar(&grpcPorts, "grpc", []int{7070}, "GRPC ports")
-	rootCmd.PersistentFlags().IntSliceVar(&grpcPorts, "tcp", []int{9090}, "TCP ports")
+	rootCmd.PersistentFlags().IntSliceVar(&tcpPorts, "tcp", []int{9090}, "TCP ports")
 	rootCmd.PersistentFlags().StringVar(&uds, "uds", "", "HTTP server on unix domain socket")
 	rootCmd.PersistentFlags().StringVar(&version, "version", "", "Version string")
 	rootCmd.PersistentFlags().StringVar(&crt, "crt", "", "gRPC TLS server-side certificate")
