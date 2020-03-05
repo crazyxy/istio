@@ -15,6 +15,7 @@
 package endpoint
 
 import (
+	"bufio"
 	"fmt"
 	"net"
 
@@ -69,8 +70,7 @@ func (s *tcpInstance) Start(onReady OnReadyFunc) error {
 
 // Handles incoming connection.
 func (s *tcpInstance) echo(conn net.Conn) {
-	buf := make([]byte, 1024)
-	_, err := conn.Read(buf)
+	buf, err := bufio.NewReader(conn).ReadBytes(byte('\n'))
 	if err != nil {
 		log.Warn("tcp read failed: " + err.Error())
 	}

@@ -15,11 +15,11 @@
 package forwarder
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"fmt"
 	"net"
-	"strings"
 )
 
 var _ protocol = &tcpProtocol{}
@@ -55,24 +55,16 @@ func (c *tcpProtocol) makeRequest(ctx context.Context, req *request) (string, er
 		message = req.Message
 	}
 
-	_, err := c.conn.Write([]byte(message))
+	_, err := c.conn.Write([]byte(message + "\n"))
 	if err != nil {
 		return outBuffer.String(), err
 	}
 
-	resp := make([]byte, 1024)
-	n, err := c.conn.Read(resp)
+	resp, err := bufio.NewReader(c.conn).ReadBytes(byte('\n'))
 	if err != nil {
 		return outBuffer.String(), err
 	}
-
-	outBuffer.WriteString(fmt.Sprintf("[%d] Read %d bytes\n", req.RequestID, n))
-
-	for _, line := range strings.Split(string(resp), "\n") {
-		if line != "" {
-			outBuffer.WriteString(fmt.Sprintf("[%d body] %s\n", req.RequestID, line))
-		}
-	}
+	outBuffer.WriteString(fmt.Sprintf("[%d body] %s\n", req.RequestID, string(resp)))
 
 	return outBuffer.String(), nil
 }
