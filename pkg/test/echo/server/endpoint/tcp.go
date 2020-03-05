@@ -45,7 +45,7 @@ func (s *tcpInstance) Start(onReady OnReadyFunc) error {
 	s.l = listener
 	// Store the actual listening port back to the argument.
 	s.Port.Port = p
-	fmt.Printf("Listening TCP on %v\n", p)
+	log.Infof("listening TCP on %v", p)
 
 	// Start serving TCP traffic.
 	go func() {
