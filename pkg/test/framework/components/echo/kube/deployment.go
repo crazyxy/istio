@@ -114,7 +114,7 @@ spec:
 {{- else }}
           - --port
 {{- end }}
-          - "{{ $p }}"
+          - "{{ $p.Port }}"
 {{- end }}
           - --version
           - "{{ .Version }}"
