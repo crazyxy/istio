@@ -15,14 +15,12 @@
 package forwarder
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"strings"
-
-	"istio.io/istio/pkg/test/echo/common/response"
 )
 
 var _ protocol = &tcpProtocol{}
@@ -63,22 +61,15 @@ func (c *tcpProtocol) makeRequest(ctx context.Context, req *request) (string, er
 		return outBuffer.String(), err
 	}
 
-	buf := make([]byte, 1024+len(message))
-	n, err := bufio.NewReader(c.conn).Read(buf)
+	buf, err := ioutil.ReadAll(c.conn)
 	if err != nil {
 		return outBuffer.String(), err
 	}
 
-	for _, line := range strings.Split(string(buf[:n]), "\n") {
+	for _, line := range strings.Split(string(buf), "\n") {
 		if line != "" {
 			outBuffer.WriteString(fmt.Sprintf("[%d body] %s\n", req.RequestID, line))
 		}
-	}
-
-	msg := outBuffer.String()
-	expected := fmt.Sprintf("%s=%s", string(response.StatusCodeField), response.StatusCodeOK)
-	if !strings.Contains(msg, expected) {
-		return msg, fmt.Errorf("expect to recv message with %s, got %s. Return EOF", expected, msg)
 	}
 	return outBuffer.String(), err
 }

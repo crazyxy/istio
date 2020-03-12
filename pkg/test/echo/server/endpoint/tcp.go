@@ -80,18 +80,14 @@ func (s *tcpInstance) echo(conn io.ReadWriteCloser) {
 	// Fill the field in the response
 	_, _ = conn.Write([]byte(fmt.Sprintf("%s=%s\n", string(response.StatusCodeField), response.StatusCodeOK)))
 
-	for {
-		buf, err := bufio.NewReader(conn).ReadBytes(byte('\n'))
-		if err != nil {
-			if err != io.EOF {
-				log.Warn("tcp read failed: " + err.Error())
-			}
-			return
-		}
-
-		// echo the message in the buffer
-		_, _ = conn.Write(buf)
+	buf := make([]byte, 2048)
+	n, err := bufio.NewReader(conn).Read(buf)
+	if err != nil {
+		return
 	}
+
+	// echo the message in the buffer
+	_, _ = conn.Write(buf[:n])
 }
 
 func (s *tcpInstance) Close() error {
